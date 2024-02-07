@@ -1,0 +1,47 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.layout{
+ 
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+form{
+    display: flex;
+    flex-direction: column;
+}
+.uniform{
+    display: flex;
+}
+.radio1{
+    display: flex;
+    flex-direction: column
+}
+.radio2{
+    display: flex;
+    flex-direction: column;
+
+}
+.genero{
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px;
+}
+
+#inputfirm{
+    border: 0;
+    border-style: none;
+}
+#inputdate{
+    border: 0;
+    border-style: none;
+}
