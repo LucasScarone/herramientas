@@ -61,7 +61,10 @@ function renderCards( movies, element, fn ){
         /* Agrego el nodo al elemento */
         fragment.appendChild( newArticle )
     }
-    element.innerHTML = "" 
+    // if (movies.length == 0){
+    //    element.innerHTML = `<h2 class="font-semibold text-2xl">No haay nada </h2>`
+    // }
+    element.innerHTML = ""
     element.appendChild( fragment )
 
 }
@@ -97,7 +100,7 @@ genres.forEach ( genres =>{
 
 function creareOption(params) {
     const option =document.createElement('option')
-    option.setAttribute('value', '${params}')
+    option.setAttribute('value', `${params}`)
     option.textContent = params
     return option
     
@@ -106,11 +109,19 @@ function crearselect( array, element, fn ){
     const select = document.createElement( 'select' )
     select.setAttribute('class', 'bg-[#D2CCFF] h-9 w-full border border-black rounded')
     select.setAttribute('id', 'select')
+
+    const option = document.createElement('option')
+    option.setAttribute("selected", "disabled")
+    option.textContent = "Genres"
+
+    select.appendChild( option )
+
+
     for (const iterator of array) {
         /* Ejecuto la funcion que crear el nodo */
         const newOption = fn( iterator ) 
         /* Agrego el nodo al elemento */
-        select.appendChild( newOption )
+        select.append( newOption )
     }
     element.appendChild( select )
     
@@ -118,9 +129,10 @@ function crearselect( array, element, fn ){
 
 crearselect(genresSinRepetidos, div2, creareOption)
 
-inputBusqueda.addEventListener('input',()=>{
+inputBusqueda.addEventListener("input",()=>{
     const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(peliculas, inputBusqueda.value)
-    renderCards( peliFiltradoXTiTulo, div, createCard );
+    const peliculasfiltradasXgenres = filtarPeliculasXgenres(peliFiltradoXTiTulo, select)
+    renderCards( peliculasfiltradasXgenres, div, createCard );
 })
 
 const select = document.getElementById('select')
@@ -132,11 +144,13 @@ function filtrarpeliculasporTitulo(ListadePeliculas, title) {
 
 
 select.addEventListener( "change", ()=>{
-    const peliculasfiltradasXgenres= filtarPeliculasXgenres(peliculas, select.value)
-    renderCards(peliculasfiltradasXgenres, div, createCard)
+    const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(peliculas, inputBusqueda.value)
+    const peliculasfiltradasXgenres = filtarPeliculasXgenres(peliFiltradoXTiTulo, select)
+    renderCards( peliculasfiltradasXgenres, div, createCard );
 })
 
-function filtarPeliculasXgenres(ListadePeliculas, select){
-    return ListadePeliculas.filter(pelicula => pelicula.genres.includes(select.value))
+function filtarPeliculasXgenres(ListadePeliculas, etiqueta){
+    return ListadePeliculas.filter(peliculas => peliculas.genres.includes(select.value))
 }
+
 
