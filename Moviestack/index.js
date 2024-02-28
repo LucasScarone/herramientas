@@ -1,19 +1,12 @@
-/* <article class="w-8/12 p-2 border-4 border-[#6D38E0] rounded bg-black text-white">
-<img src="https://moviestack.onrender.com/static/y5szbv8zju.jpg" alt="">
-<h3 class="flex flex-col text-center font-bold">The Nun II</h3>
-<h4 class="font-semibold">Confess your sins.</h4>
-<p class="font-semibold"></p>Descripcion:</p>
-<p class="line-clamp-3	">
-    In 1956 France, a priest is violently murdered, and Sister 
-    Irene begins to investigate. She once again comes face-to-face with a powerful evil.</p>
-</article> */
-// 
+let peliculas=[]
 
 const div= document.getElementById("content")
 
 
 /* Trabajando con nodos */
 function createCard( movies ){
+    // agregando el url a la imagen
+    const url='https://moviestack.onrender.com/static/'+ movies.image
     /* Creo el nodo <article> */
     /* document.createElement( elemento ) */
     const article = document.createElement( 'article' )
@@ -24,7 +17,7 @@ function createCard( movies ){
     const img = document.createElement( "img" )
     /* Agrego atributo src a la imagen */
     /* setAttribute */
-    img.setAttribute( "src", movies.image )
+    img.setAttribute( "src", url )
 
     /* Agrego atributo alt */
     img.setAttribute( "alt", movies.name )
@@ -45,8 +38,14 @@ function createCard( movies ){
     const p2 = document.createElement( 'p' )
     p2.textContent = movies.overview
     p2.classList.add("line-clamp-3")
+     
+    const a= document.createElement('a')
+    a.setAttribute('class', "font-semibold text-[#6D38E0]")
+    a.innerHTML = "See more..."
+    a.setAttribute('href', `./detalles.html?id=${movies.id}`)
+
     /* element.append me permite agregar varios a la vez */
-    article.append( img, h3, h4, p, p2 )
+    article.append( img, h3, h4, p, p2, a)
 
     return article
 } 
@@ -55,16 +54,16 @@ function createCard( movies ){
 function renderCards( movies, element, fn ){
 
     const fragment = document.createDocumentFragment()
+    if (movies.length == 0) {
+        return element.innerHTML = `<h2>There are no movies with these filters</h2>`
+    }
     for (const iterator of movies) {
         /* Ejecuto la funcion que crear el nodo */
         const newArticle = fn( iterator ) 
         /* Agrego el nodo al elemento */
         fragment.appendChild( newArticle )
     }
-    // if (movies.length == 0){
-    //    element.innerHTML = `<h2 class="font-semibold text-2xl">No haay nada </h2>`
-    // }
-    element.innerHTML = ""
+    element.innerHTML = "" 
     element.appendChild( fragment )
 
 }
@@ -73,19 +72,9 @@ renderCards( peliculas, div, createCard )
 
 const div2=document.getElementById('contentselect')
 
-// barra de busqueda
-// 1 crear la etiquet 
-// 2poner el imput 
-// 3trear el DOM
-const inputBusqueda = document.getElementById('inputBusqueda')
-// 4indentificar el evento 
 
-// 5funcion para filtrar las peliculas por su nombre 
-// 6agregarñlos a un array nuevo 
-// 7enlazr la funcion con el evento 
-// 8indicarle al evento lo que quuiero que haga 
-// 9imprimir por pantallala nueva lista cda vez que se busque 
-// 10 despues tengo qe hacer que si no encuentra niguno me de un aviso
+const inputBusqueda = document.getElementById('inputBusqueda')
+
 
 const genres= peliculas.map(pelicula => pelicula.genres).flat()
 
@@ -96,7 +85,7 @@ genres.forEach ( genres =>{
     }
 })
 
-// console.log(genresSinRepetidos)
+console.log(peliculas)
 
 function creareOption(params) {
     const option =document.createElement('option')
@@ -107,21 +96,17 @@ function creareOption(params) {
 }
 function crearselect( array, element, fn ){
     const select = document.createElement( 'select' )
-    select.setAttribute('class', 'bg-[#D2CCFF] h-9 w-full border border-black rounded')
+    select.setAttribute('class', 'bg-[#D2CCFF] h-9 w-full border border-[#6D38E0] rounded xl:h-[60px] xl:border-2 xl:text-xl 2xl:text-3xl 2xl:h-[80px]')
     select.setAttribute('id', 'select')
-
-    const option = document.createElement('option')
-    option.setAttribute("selected", "disabled")
-    option.textContent = "Genres"
-
-    select.appendChild( option )
-
-
+    const option =document.createElement('option')
+    option.setAttribute('value', 'all')
+    option.textContent = 'All'
+    select.appendChild(option)
     for (const iterator of array) {
         /* Ejecuto la funcion que crear el nodo */
         const newOption = fn( iterator ) 
         /* Agrego el nodo al elemento */
-        select.append( newOption )
+        select.appendChild( newOption )
     }
     element.appendChild( select )
     
@@ -129,10 +114,10 @@ function crearselect( array, element, fn ){
 
 crearselect(genresSinRepetidos, div2, creareOption)
 
-inputBusqueda.addEventListener("input",()=>{
+inputBusqueda.addEventListener('input',()=>{
     const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(peliculas, inputBusqueda.value)
-    const peliculasfiltradasXgenres = filtarPeliculasXgenres(peliFiltradoXTiTulo, select)
-    renderCards( peliculasfiltradasXgenres, div, createCard );
+    const filtarPeliXgenres = filtarPeliculasXgenres (peliFiltradoXTiTulo, select)
+    renderCards(filtarPeliXgenres, div, createCard );
 })
 
 const select = document.getElementById('select')
@@ -143,14 +128,41 @@ function filtrarpeliculasporTitulo(ListadePeliculas, title) {
 } 
 
 
-select.addEventListener( "change", ()=>{
-    const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(peliculas, inputBusqueda.value)
-    const peliculasfiltradasXgenres = filtarPeliculasXgenres(peliFiltradoXTiTulo, select)
-    renderCards( peliculasfiltradasXgenres, div, createCard );
+select.addEventListener( 'change', ()=>{
+    const peliculasfiltradasXgenres= filtarPeliculasXgenres(peliculas, select)
+    const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(peliculasfiltradasXgenres, inputBusqueda.value)
+
+    renderCards(peliFiltradoXTiTulo, div, createCard)
 })
 
-function filtarPeliculasXgenres(ListadePeliculas, etiqueta){
-    return ListadePeliculas.filter(peliculas => peliculas.genres.includes(select.value))
+function filtarPeliculasXgenres(ListadePeliculas, select){
+    console.log(select.value)
+    if (select.value === "all") {
+        return ListadePeliculas
+    }
+    return ListadePeliculas.filter(pelicula => pelicula.genres.includes(select.value))
 }
 
+const url='https://moviestack.onrender.com/api/movies'
+const init = {
+    method: "GET",
+    headers:{
+        'x-api-key': '0ff70d54-dc0b-4262-9c3d-776cb0f34dbd'
+    }
+}
+fetch(url,init)
+.then(response => response.json())
+.then((data)=>{
+    peliculas = data.movies
+    renderCards(peliculas, div, createCard)
+})
 
+
+
+// notas crear un evento e tipo clictk
+// cuando detecte el click tome el id
+// data- para generar una propiedad y ponerle el id
+// para conectactar con el article y el icono del click
+// target.dataset.accion para ver donde ocurre el evento 
+
+// agregarlo a la card
