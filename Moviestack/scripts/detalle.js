@@ -1,4 +1,7 @@
+
 let peliculas =[]
+const URLParams = new URLSearchParams (location.search)
+const id= URLParams.get('id')
 const url='https://moviestack.onrender.com/api/movies'
 const init = {
     method: "GET",
@@ -10,10 +13,6 @@ fetch(url,init)
 .then(response => response.json())
 .then((data)=>{
     peliculas = data.movies
-    renderCards(peliculas, div, createCard)
-
-const URLParams = new URLSearchParams (location.search)
-const id= URLParams.get('id')
 const peliDetalle= peliculas.find(pelicula => pelicula.id == id)
 const divDetalle=document.getElementById('contentDetalles')
 
@@ -30,7 +29,7 @@ divDetalle.innerHTML=`
 <main class="grow bg-black flex-wrap ">
     <a class="font-semibold text-[#6D38E0]" href="/movies.html"> <- Back to top</a>
    <div class="flex flex-wrap">
-       <img class="w-full h-1/2 md:pl-2 md:object-cover md:w-[350px] md:h-[300px] lg:w-1/2 lg:h-1/2" src="${peliDetalle.image}" alt="${peliDetalle.title}">
+       <img class="w-full h-1/2 md:pl-2  md:w-[350px] md:h-[300px] lg:w-1/2 lg:h-1/2" src="https://moviestack.onrender.com/static/${peliDetalle.image}" alt="${peliDetalle.title}">
        <div class="px-5 md:w-1/2">
            <h2 class="text-center font-bold text-3xl">${peliDetalle.title}</h2>
            <h3 class="font-bold text-2xl">${peliDetalle.tagline}</h3>

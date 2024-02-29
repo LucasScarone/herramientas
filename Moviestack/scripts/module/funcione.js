@@ -5,7 +5,14 @@ export function createCard( movies ){
     /* document.createElement( elemento ) */
     const article = document.createElement( 'article' )
     /* Le agrego las clases */
-    article.className = "w-[233px] h-[131]  md:w-[283px] md:h-[181] p-2 border-4 border-[#6D38E0] m-1 rounded bg-black text-white"
+    article.className = "flex flex-col w-[233px] h-[131]  md:w-[283px] md:h-[181] p-2 border-4 border-[#6D38E0] m-1 rounded bg-black text-white"
+    // agrego un boton
+    const boton =document.createElement('button')
+    // Le agrego el id de la pelicula
+    boton.setAttribute('type', 'button')
+    boton.setAttribute('data-id', movies.id)
+    boton.className ="w-10 text-black border-2 border-red-500 bg-white "
+    boton.textContent = "FAVS"
 
     /* Creo el nodo <img> */
     const img = document.createElement( "img" )
@@ -39,7 +46,7 @@ export function createCard( movies ){
     a.setAttribute('href', `./detalles.html?id=${movies.id}`)
 
     /* element.append me permite agregar varios a la vez */
-    article.append( img, h3, h4, p, p2, a)
+    article.append( boton, img, h3, h4, p, p2, a)
 
     return article
 } 
