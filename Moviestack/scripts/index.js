@@ -21,18 +21,17 @@ fetch(url,init)
 .then(response => response.json())
 .then((data)=>{
     peliculas = data.movies
-    const PeliculasconFavs= peliculas.map(peliculas =>{
-        return{
-            ...peliculas,
-            favs: true
-        }
-    })
+    // const PeliculasconFavs= peliculas.map(peliculas =>{
+    //     return{
+    //         peliculas,
+    //         favs: true
+    //     }
+    
     
 
+    renderCards(peliculas, div, createCard)
 
-    renderCards(PeliculasconFavs, div, createCard)
-
-    const genres= PeliculasconFavs.map(pelicula => pelicula.genres).flat()
+    const genres= peliculas.map(pelicula => pelicula.genres).flat()
 
 const genresSinRepetidos= []
 genres.forEach ( genres =>{
@@ -69,7 +68,7 @@ function crearselect( array, element, fn ){
 crearselect(genresSinRepetidos, div2, creareOption)
 
 inputBusqueda.addEventListener('input',()=>{
-    const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(PeliculasconFavs, inputBusqueda.value)
+    const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(peliculas, inputBusqueda.value)
     const filtarPeliXgenres = filtarPeliculasXgenres (peliFiltradoXTiTulo, select)
     renderCards(filtarPeliXgenres, div, createCard );
 })
@@ -78,12 +77,12 @@ const select = document.getElementById('select')
 
 
 function filtrarpeliculasporTitulo(ListadePeliculas, title) {
-   return ListadePeliculas.filter(PeliculasconFavs => PeliculasconFavs.title.toLowerCase().startsWith(title.toLowerCase()))
+   return ListadePeliculas.filter(peliculas => peliculas.title.toLowerCase().startsWith(title.toLowerCase()))
 } 
 
 
 select.addEventListener( 'change', ()=>{
-    const peliculasfiltradasXgenres= filtarPeliculasXgenres(PeliculasconFavs, select)
+    const peliculasfiltradasXgenres= filtarPeliculasXgenres(peliculas, select)
     const peliFiltradoXTiTulo= filtrarpeliculasporTitulo(peliculasfiltradasXgenres, inputBusqueda.value)
 
     renderCards(peliFiltradoXTiTulo, div, createCard)
@@ -94,23 +93,41 @@ function filtarPeliculasXgenres(ListadePeliculas, select){
     if (select.value === "all") {
         return ListadePeliculas
     }
-    return ListadePeliculas.filter(PeliculasconFavs => PeliculasconFavs.genres.includes(select.value))
+    return ListadePeliculas.filter(peliculas => peliculas.genres.includes(select.value))
 }
 
-const boton= document.getElementById('content')
+const content = document.getElementById('content');
+// recupero los datos
+const listFavs = JSON.parse( localStorage.getItem('listFavs') ) || [] 
 
-const listFavs=[]
-console.log(listFavs);
-boton.addEventListener('click',(e)=>{
-    if(e.target.tagName == 'BUTTON'){
-        console.log(e.target.parentElement)
-        e.target.classList.add("bg-red-500")
-        const peliculaFavs= e.target.attributes[1].value
-        listFavs.push(peliculaFavs)
-        console.log(listFavs);
+content.addEventListener('click', (e) => {
+    // detecto el click
+    if (e.target.tagName === 'BUTTON') {
+        // asigno una variable
+        const button = e.target;
+        // agrego y saco el color si ya lo tiene
+        button.classList.toggle("bg-red-500");
+        // asigno peliculaFavs elvalor que necesito en el array
+        const peliculaFavs = button.dataset.id;
+        // ahora hago un indexof para buscar si la lista 
+        // tiene ese valor incluido y lo guardo
+        const index = listFavs.indexOf(peliculaFavs);
+        // ahora compruebo si lo tiene lo borre y si no lo tien 
+        // lo argregue
+        if (index === -1) {
+            listFavs.push(peliculaFavs);
+        } else {
+            listFavs.splice(index, 1);
+        }
+        if (listFavs.length === 0) {
+            console.log("No Hay elementos en la lista"); 
+        }else{
+             console.log(listFavs);
+
+        }
     }
-} )
-
+    localStorage.setItem( 'listFavs',JSON.stringify(listFavs))
+})
 
 
 })
